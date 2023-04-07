@@ -39,8 +39,6 @@ class BucketTable(NetBoxTable):
 
     tags = columns.TagColumn()
 
-
-
     class Meta(NetBoxTable.Meta):
         model = Bucket
         fields = ("pk", 

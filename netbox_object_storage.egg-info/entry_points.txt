@@ -1,0 +1,2 @@
+[netbox_plugins]
+netbox_object_storage = netbox_object_storage:Plugin

@@ -1,19 +1,18 @@
-from ..models import Bucket
+from ..models import Bucket, Cluster, Pool, BucketAccessChoices
+from django import forms
 from extras.models import Tag
+from django.utils.translation import gettext as _
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm
 from utilities.forms.fields import CommentField, DynamicModelChoiceField, DynamicModelMultipleChoiceField
-# from utilities.forms import ConfirmationForm, BootstrapMixin
-from django import forms
-from ..models import Cluster
-from ..models import Pool
+from django.contrib.contenttypes.models import ContentType
+from utilities.forms import (
+    ContentTypeMultipleChoiceField,
+    MultipleChoiceField, TagFilterField,
+)
+from ..constants import BUCKET_ASSIGNMENT_MODELS
 
 
 class BucketForm(NetBoxModelForm):
-    TYPE_CHOICES = (
-        ('cluster', 'Cluster'),
-        ('pool', 'Pool'),
-    )
-
     cluster = DynamicModelChoiceField(
         queryset=Cluster.objects.all(),
         required=False,
@@ -75,3 +74,38 @@ class BucketForm(NetBoxModelForm):
             raise ValidationError('A bucket can only have one terminating object (an cluster or pool).')
 
         self.instance.assigned_object = cluster or pool
+
+
+class BucketFilterForm(NetBoxModelFilterSetForm):
+    model = Bucket
+    fieldsets = (
+        (None, ('q', 'filter_id', 'capacity', 'credential', 'url', 'access',)),
+        ('Assigned Storage', (
+            'assigned_object_type_id',
+        )),
+    )
+    access = MultipleChoiceField(
+        choices=BucketAccessChoices,
+        required=False,
+    )
+
+    assigned_object_type_id = ContentTypeMultipleChoiceField(
+        queryset=ContentType.objects.filter(BUCKET_ASSIGNMENT_MODELS),
+        required=False,
+        label=_('Assigned Object Type'),
+        limit_choices_to=BUCKET_ASSIGNMENT_MODELS
+    )
+
+    capacity = forms.IntegerField(
+        required=False
+    )
+
+    url = forms.URLField(
+        required=False
+    )
+
+    credential = forms.CharField(
+        required=False
+    )
+
+    tag = TagFilterField(model)

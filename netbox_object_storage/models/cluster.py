@@ -3,7 +3,17 @@ from django.urls import reverse
 from netbox.models import NetBoxModel
 from taggit.models import Tag
 from django.core.exceptions import ValidationError
+from utilities.choices import ChoiceSet
 
+
+class ClusterTypeChoice(ChoiceSet):
+
+    CHOICES = [
+        ('device', 'Device'),
+        ('vm', 'VM'),
+        ('devicevm', 'Device/VM'),
+
+    ]
 
 class Cluster(NetBoxModel):
     name = models.CharField(
@@ -12,6 +22,7 @@ class Cluster(NetBoxModel):
     )
 
     type = models.CharField(
+        choices=ClusterTypeChoice,
         max_length=20,
         null=True,
     )

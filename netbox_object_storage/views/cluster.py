@@ -1,5 +1,7 @@
 from netbox.views import generic
 from .. import forms, models, tables
+from .. import filtersets
+
 
 class ClusterView(generic.ObjectView):
     queryset = models.Cluster.objects.all()
@@ -8,7 +10,8 @@ class ClusterView(generic.ObjectView):
 class ClusterListView(generic.ObjectListView):
     queryset = models.Cluster.objects.all()
     table = tables.ClusterTable
-
+    filterset = filtersets.ClusterFilterSet
+    filterset_form = forms.ClusterFilterForm
 
 class ClusterEditView(generic.ObjectEditView):
     queryset = models.Cluster.objects.all()

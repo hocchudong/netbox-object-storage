@@ -12,6 +12,10 @@
     <a href="{% url 'plugins:netbox_object_storage:cluster_add_virtualmachine' pk=object.pk %}?return_url={{ object.get_absolute_url }}" class="btn btn-primary btn-sm">
         <span class="mdi mdi-plus-thick" aria-hidden="true"></span> Assign VirtualMachine
     </a>
+  {% elif object.type == 'devicevm' %}
+    <a href="{% url 'plugins:netbox_object_storage:cluster_add_virtualmachine' pk=object.pk %}?return_url={{ object.get_absolute_url }}" class="btn btn-primary btn-sm">
+        <span class="mdi mdi-plus-thick" aria-hidden="true"></span> Assign VirtualMachine
+    </a>
   {% else %}
     <a href="#" class="btn btn-primary btn-sm disabled" aria-disabled="true">
       <span class="mdi mdi-plus-thick" aria-hidden="true"></span> Assign VirtualMachine

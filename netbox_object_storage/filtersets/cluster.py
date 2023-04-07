@@ -18,11 +18,7 @@ class ClusterFilterSet(NetBoxModelFilterSet):
         queryset=Device.objects.all(),
         label='Device (ID)',
     )
-    tag_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='tags',
-        queryset=Tag.objects.all(),
-        label=_('Tag'),
-    )
+
     class Meta:
         model = Cluster
         fields = (
