@@ -3,7 +3,7 @@ Plugin quản lý về object storage
 
 ## Installing
 
-### Step 1: Prepare 
+#### Step 1: Prepare 
 
 - Clone netbox project
 
@@ -16,14 +16,14 @@ cd netbox-docker
 - Create a few files these are (`plugin_requirements.txt`, `Dockerfile-Plugins`, `docker-compose.override.yml`)
 
 
-### Step 2: File `plugin_requirements.txt` using for declare plugin or pip requirement with the following content:
+#### Step 2: File `plugin_requirements.txt` using for declare plugin or pip requirement with the following content:
 
 ```
 gunicorn
 git+https://github.com/hungviet99/netbox-object-storage.git@main
 ```
 
-### Step3: File `Dockerfile-Plugins` will enable to build a new image with the required plugins:
+#### Step3: File `Dockerfile-Plugins` will enable to build a new image with the required plugins:
 
 ```
 FROM netboxcommunity/netbox:latest
@@ -43,7 +43,7 @@ COPY configuration/configuration.py /etc/netbox/config/configuration.py
 RUN SECRET_KEY="dummy" /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py collectstatic --no-input
 ```
 
-### Step4: File `Dockerfile-Plugins` to configuration overrides for existing services or entirely new services of netbox:
+#### Step4: File `Dockerfile-Plugins` to configuration overrides for existing services or entirely new services of netbox:
 
 ```
 version: '3.4'
@@ -67,7 +67,7 @@ services:
       dockerfile: Dockerfile-Plugins
 ```
 
-### Step 5: Build and run docker-compose
+#### Step 5: Build and run docker-compose
 
 ```
 docker-compose build --no-cache
