@@ -43,7 +43,7 @@ COPY configuration/configuration.py /etc/netbox/config/configuration.py
 RUN SECRET_KEY="dummy" /opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py collectstatic --no-input
 ```
 
-#### Step4: File `Dockerfile-Plugins` to configuration overrides for existing services or entirely new services of netbox:
+#### Step4: File `docker-compose.override.yml` to configuration overrides for existing services or entirely new services of netbox:
 
 ```
 version: '3.4'
