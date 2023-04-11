@@ -1,5 +1,3 @@
-from packaging import version
-
 from extras.plugins import PluginMenuButton, PluginMenuItem
 from utilities.choices import ButtonColorChoices
 
@@ -21,7 +19,7 @@ bucket_buttons = [
 
 cluster_buttons = [
     PluginMenuButton(
-        link='plugins:netbox_object_storage:cluster_add',
+        link='plugins:netbox_object_storage:s3cluster_add',
         title='Add',
         icon_class='mdi mdi-plus-thick',
         color=ButtonColorChoices.GREEN
@@ -43,9 +41,9 @@ menu_buttons = (
         link='plugins:netbox_object_storage:bucket_list',
         link_text='Bucket',
         buttons=bucket_buttons
-    ),
+    ),    
     PluginMenuItem(
-        link='plugins:netbox_object_storage:cluster_list',
+        link='plugins:netbox_object_storage:s3cluster_list',
         link_text='S3 Cluster',
         buttons=cluster_buttons
     ),
@@ -53,7 +51,7 @@ menu_buttons = (
         link='plugins:netbox_object_storage:pool_list',
         link_text='Pool',
         buttons=pool_buttons
-    )
+    ),
 )
 
 

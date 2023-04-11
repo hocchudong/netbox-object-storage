@@ -10,23 +10,27 @@
           <table class="table table-hover attr-table">
             <tr>
               <th scope="row">Name</th>
-              <td>{{ object.name }}</td>
+              <td>{{ object.name|linkify|placeholder }}</td>
             </tr>
             <tr>
               <th scope="row">Type</th>
               <td>{{ object.type }}</td>
             </tr>
             <tr>
+              <th scope="row">Contact</th>
+              <td>{{ object.contact|linkify|placeholder }}</td>
+            </tr>
+            <tr>
               <th scope="row">Size</th>
               <td>{{ object.size }}</td>
             </tr>
             <tr>
-              <th scope="row">Cluster</th>
-              <td>{{ object.cluster }}</td>
+              <th scope="row">S3Cluster</th>
+              <td>{{ object.cluster|linkify|placeholder }}</td>
             </tr>
             <tr>
               <th scope="row">Description</th>
-              <td>{{ object.description }}</td>
+              <td>{{ object.description|placeholder }}</td>
             </tr>
           </table>
         </div>

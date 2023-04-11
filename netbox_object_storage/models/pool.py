@@ -1,16 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from netbox.models import NetBoxModel
-from utilities.choices import ChoiceSet
-from .cluster import Cluster
 from django.core.exceptions import ValidationError
 
-class PoolTypeChoices(ChoiceSet):
-
-    CHOICES = [
-        ('ssd', 'SSD'),
-        ('hdd', 'HDD')
-    ]
 
 class Pool(NetBoxModel):
     name = models.CharField(
@@ -20,19 +12,29 @@ class Pool(NetBoxModel):
 
     type = models.CharField(
         max_length=15,
-        choices=PoolTypeChoices, 
+        null=True,
         blank=True
     )
 
+    contact = models.ForeignKey(
+        to='tenancy.Contact',
+        on_delete=models.SET_NULL, 
+        null=True,
+        blank=True,
+        default=None,
+        related_name='s3pool_contact',
+    )
+
     cluster = models.ForeignKey(
-        to='netbox_object_storage.Cluster',
+        to='netbox_object_storage.S3Cluster',
         on_delete=models.SET_NULL,
         related_name='pool_cluster',
         null=True
     )
 
     size = models.IntegerField(
-        default=0,
+        blank=True,
+        null=True,
         verbose_name = 'Size (GB)'
     )
 
@@ -44,6 +46,10 @@ class Pool(NetBoxModel):
     comments = models.TextField(
         blank=True
     )
+
+    # prerequisite_models = (
+    #     'netbox_object_storage.S3Cluster',
+    # )
 
     class Meta:
         ordering = ('name',)

@@ -1,8 +1,8 @@
 from virtualization.models import VirtualMachine
-from dcim.models import Device, DeviceRole, Platform, Rack, Region, Site, SiteGroup
+from dcim.models import Device, Rack, Region, Site, SiteGroup
 from django import forms
-from utilities.forms import ConfirmationForm, BootstrapMixin, MultipleChoiceField
-from utilities.forms.fields import CommentField, DynamicModelChoiceField, DynamicModelMultipleChoiceField
+from utilities.forms import ConfirmationForm, BootstrapMixin
+from utilities.forms.fields import DynamicModelChoiceField, DynamicModelMultipleChoiceField
 
 
 ### Device ADD
@@ -76,6 +76,7 @@ class ClusterAddVMsForm(BootstrapMixin, forms.Form):
         super().__init__(*args, **kwargs)
         
         self.fields['virtualmachine'].choices = []
+
 
 ### VM Remove
 class ClusterRemoveVMsForm(ConfirmationForm):

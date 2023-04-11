@@ -1,7 +1,8 @@
 from netbox.views import generic
 from .. import forms, models, tables
-from utilities.views import ViewTab, register_model_view
+from utilities.views import register_model_view
 from .. import filtersets
+
 
 @register_model_view(models.Bucket)
 class BucketView(generic.ObjectView):
@@ -13,6 +14,7 @@ class BucketListView(generic.ObjectListView):
     table = tables.BucketTable
     filterset = filtersets.BucketFilterSet
     filterset_form = forms.BucketFilterForm
+
 
 @register_model_view(models.Bucket, 'edit')
 class BucketEditView(generic.ObjectEditView):

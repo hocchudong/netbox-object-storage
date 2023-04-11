@@ -1,7 +1,7 @@
 from netbox.views import generic
 from django.shortcuts import get_object_or_404, redirect, render
-from ..models import Cluster
-from .. import forms, tables
+from ..models import S3Cluster
+from .. import forms
 from django.db import transaction
 from virtualization.models import VirtualMachine
 from virtualization.tables import VirtualMachineTable
@@ -12,9 +12,9 @@ from utilities.views import ViewTab, register_model_view
 from django.contrib import messages
 
 
-@register_model_view(Cluster, 'virtualmachine')
-class ClusterVirtualMachineView(generic.ObjectChildrenView):
-    queryset = Cluster.objects.all()
+@register_model_view(S3Cluster, 'virtualmachine')
+class S3ClusterVirtualMachineView(generic.ObjectChildrenView):
+    queryset = S3Cluster.objects.all()
     child_model = VirtualMachine
     table = VirtualMachineTable
     filterset = VirtualMachineFilterSet
@@ -25,15 +25,6 @@ class ClusterVirtualMachineView(generic.ObjectChildrenView):
         weight=600
     )
 
-    # def get(self, request, pk):
-    #     queryset = self.queryset.filter(pk=pk)
-    #     cluster = get_object_or_404(queryset)
-    #     if cluster.type not in ['vm']:
-    #         # self.tab = None
-    #         messages.warning(request, 'This cluster is not type device !')
-    #         return redirect(reverse('plugins:netbox_object_storage:cluster', kwargs={'pk': pk}))
-    #     return super().get(request, pk)
-
     def get_children(self, request, parent):
         vms_list = parent.virtualmachine.all()
         return VirtualMachine.objects.restrict(request.user, 'view').filter(
@@ -42,9 +33,9 @@ class ClusterVirtualMachineView(generic.ObjectChildrenView):
     
      # permission='virtualization.view_virtualmachine',
 
-@register_model_view(Cluster, 'add_virtualmachine', path='virtualmachine/add')
-class ClusterAddVirtualMachineView(generic.ObjectEditView):
-    queryset = Cluster.objects.all()
+@register_model_view(S3Cluster, 'add_virtualmachine', path='virtualmachine/add')
+class S3ClusterAddVirtualMachineView(generic.ObjectEditView):
+    queryset = S3Cluster.objects.all()
     form = forms.ClusterAddVMsForm
     template_name = 'cluster_assignment/cluster_add_virtualmachine.html'
 
@@ -56,7 +47,7 @@ class ClusterAddVirtualMachineView(generic.ObjectEditView):
         return render(request, self.template_name, {
             'cluster': cluster,
             'form': form,
-            'return_url': reverse('plugins:netbox_object_storage:cluster', kwargs={'pk': pk}),
+            'return_url': reverse('plugins:netbox_object_storage:s3cluster', kwargs={'pk': pk}),
         })
 
     def post(self, request, pk):
@@ -67,14 +58,14 @@ class ClusterAddVirtualMachineView(generic.ObjectEditView):
         if form.is_valid():
             vm_pks = form.cleaned_data['virtualmachine']
             with transaction.atomic():
-                # Assign the selected VM to the Cluster
+                # Assign the selected VM to the S3Cluster
                 for virtualmachine in VirtualMachine.objects.filter(pk__in=vm_pks):
                     if virtualmachine in cluster.virtualmachine.all():
                         continue
                     else:
                         cluster.virtualmachine.add(virtualmachine)
                         cluster.save()
-            messages.success(request, "Added {} VirtualMachine to Cluster {}".format(
+            messages.success(request, "Added {} VirtualMachine to S3Cluster {}".format(
                 len(vm_pks), cluster
             ))
             return redirect(cluster.get_absolute_url())
@@ -86,9 +77,9 @@ class ClusterAddVirtualMachineView(generic.ObjectEditView):
         })
 
 
-@register_model_view(Cluster, 'remove_virtualmachine', path='virtualmachine/remove')
-class ClusterRemoveVirtualMachineView(generic.ObjectEditView):
-    queryset = Cluster.objects.all()
+@register_model_view(S3Cluster, 'remove_virtualmachine', path='virtualmachine/remove')
+class S3ClusterRemoveVirtualMachineView(generic.ObjectEditView):
+    queryset = S3Cluster.objects.all()
     form = forms.ClusterRemoveVMsForm
     template_name = 'netbox_object_storage/generic/bulk_remove.html'
 
@@ -101,12 +92,12 @@ class ClusterRemoveVirtualMachineView(generic.ObjectEditView):
             # if form.is_valid():
             vms_pks = request.POST.getlist('pk')
             with transaction.atomic():
-                    # Remove the selected VMs from the Cluster
+                    # Remove the selected VMs from the S3Cluster
                     for vms in VirtualMachine.objects.filter(pk__in=vms_pks):
                         cluster.virtualmachine.remove(vms)
                         cluster.save()
 
-            messages.success(request, "Removed {} vms from Cluster {}".format(
+            messages.success(request, "Removed {} vms from S3Cluster {}".format(
                 len(vms_pks), cluster
             ))
             return redirect(cluster.get_absolute_url())

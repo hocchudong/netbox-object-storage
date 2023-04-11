@@ -1,4 +1,4 @@
-from ..models import Bucket, Cluster, Pool, BucketAccessChoices
+from ..models import Bucket, S3Cluster, Pool, BucketAccessChoices
 from django import forms
 from extras.models import Tag
 from django.utils.translation import gettext as _
@@ -10,14 +10,21 @@ from utilities.forms import (
     MultipleChoiceField, TagFilterField,
 )
 from ..constants import BUCKET_ASSIGNMENT_MODELS
+from tenancy.models import Contact
 
 
 class BucketForm(NetBoxModelForm):
+    contact = DynamicModelChoiceField(
+        queryset=Contact.objects.all(),
+        required=False
+    )
+
     cluster = DynamicModelChoiceField(
-        queryset=Cluster.objects.all(),
+        queryset=S3Cluster.objects.all(),
         required=False,
         query_params={}
     )
+
     pool = DynamicModelChoiceField(
         queryset=Pool.objects.all(),
         required=False,
@@ -30,20 +37,7 @@ class BucketForm(NetBoxModelForm):
         queryset=Tag.objects.all(),
         required=False
     )
-    # fieldsets = (
-    #     (
-    #         'General', 
-    #         (
-    #             'name', 
-    #             'access',
-    #             'capacity', 
-    #             'credential', 
-    #             'url', 
-    #             'description',
-    #             'tags'
-    #         )
-    #     ),
-    # )
+
     class Meta:
         model = Bucket
         fields = (
@@ -55,7 +49,7 @@ class BucketForm(NetBoxModelForm):
         initial = kwargs.get('initial', {}).copy()
 
         if instance:
-            if type(instance.assigned_object) is Cluster:
+            if type(instance.assigned_object) is S3Cluster:
                 initial['cluster'] = instance.assigned_object
             elif type(instance.assigned_object) is Pool:
                 initial['pool'] = instance.assigned_object
@@ -79,20 +73,26 @@ class BucketForm(NetBoxModelForm):
 class BucketFilterForm(NetBoxModelFilterSetForm):
     model = Bucket
     fieldsets = (
-        (None, ('q', 'filter_id', 'capacity', 'credential', 'url', 'access',)),
-        ('Assigned Storage', (
-            'assigned_object_type_id',
-        )),
+        (None, ('q', 'filter_id', 'tag',)),
+        ('Bucket', ('capacity', 'credential', 'url', 'access', 'contact_id')),
+        ('Assigned Storage', ('assigned_object_type_id',)),
     )
+
     access = MultipleChoiceField(
         choices=BucketAccessChoices,
         required=False,
     )
 
+    contact_id = DynamicModelChoiceField(
+        queryset=Contact.objects.all(),
+        required=False,
+        label='Contact'
+    )
+
     assigned_object_type_id = ContentTypeMultipleChoiceField(
         queryset=ContentType.objects.filter(BUCKET_ASSIGNMENT_MODELS),
         required=False,
-        label=_('Assigned Object Type'),
+        label=_('Storage Backend Type'),
         limit_choices_to=BUCKET_ASSIGNMENT_MODELS
     )
 

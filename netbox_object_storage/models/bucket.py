@@ -3,8 +3,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.urls import reverse
 from netbox.models import NetBoxModel
 from utilities.choices import ChoiceSet
-from .cluster import Cluster
-from .pool import Pool
 from django.contrib.contenttypes.models import ContentType
 from ..constants import BUCKET_ASSIGNMENT_MODELS
 from django.core.exceptions import ValidationError
@@ -26,9 +24,18 @@ class Bucket(NetBoxModel):
     )
 
     capacity = models.IntegerField(
-        default=0,
         null=True,
+        blank=True,
         verbose_name = 'Capacity (GB)'
+    )
+
+    contact = models.ForeignKey(
+        to='tenancy.Contact',
+        on_delete=models.SET_NULL, 
+        null=True,
+        blank=True,
+        default=None,
+        related_name='s3bucket_contact',
     )
 
     credential = models.CharField(
@@ -60,6 +67,7 @@ class Bucket(NetBoxModel):
         null=True,
         default=None,
     )
+    
     assigned_object_id = models.PositiveBigIntegerField(
         blank=True,
         null=True,
@@ -81,18 +89,12 @@ class Bucket(NetBoxModel):
     )
 
     # prerequisite_models = (
-    #     'Cluster',
-    #     'Pool'
+    #     'netbox_object_storage.S3Cluster',
     # )
+
     class Meta:
         ordering = ('name',)
         verbose_name = 'Bucket'
-        constraints = (
-            models.UniqueConstraint(
-                fields=('assigned_object_type', 'assigned_object_id'),
-                name='bucket_assigned_object'
-            ),
-        )
 
     def __str__(self):
         if self.pk is not None:
@@ -103,13 +105,6 @@ class Bucket(NetBoxModel):
         return reverse('plugins:netbox_object_storage:bucket', args=[self.pk])
 
     def clean(self):
-        # Only check is assigned_object is set.  Required otherwise we have an Integrity Error thrown.
-        if self.assigned_object:
-            obj_id = self.assigned_object.pk
-            obj_type = ContentType.objects.get_for_model(self.assigned_object)
-            if Bucket.objects.filter(assigned_object_id=obj_id, assigned_object_type=obj_type).\
-                    exclude(pk=self.pk).count() > 0:
-                raise ValidationError(f'Bucket already assigned ({self.assigned_object})')
         # Check if name is existed, raise Validation Error
         if Bucket.objects.filter(name=self.name).exclude(pk=self.pk).exists():
             raise ValidationError('A bucket with this name already exists.')

@@ -1,13 +1,21 @@
 from django.db.models import Q
 from netbox.filtersets import NetBoxModelFilterSet
 from ..models import Bucket
+from tenancy.models import Contact
 import django_filters
 from utilities.filters import (
     ContentTypeFilter,
 )
 
+
 class BucketFilterSet(NetBoxModelFilterSet):
     assigned_object_type = ContentTypeFilter()
+
+    contact_id = django_filters.ModelMultipleChoiceFilter(
+        field_name='contact',
+        queryset=Contact.objects.all(),
+        label='Contact (ID)',
+    )
 
     class Meta:
         model = Bucket
@@ -15,6 +23,7 @@ class BucketFilterSet(NetBoxModelFilterSet):
             'id', 
             'name', 
             'capacity', 
+            'contact', 
             'credential', 
             'url',
             'access',
@@ -24,6 +33,7 @@ class BucketFilterSet(NetBoxModelFilterSet):
     def search(self, queryset, name, value):
         query = Q(
             Q(name__icontains=value) |
+            Q(contact__name__icontains=value) |
             Q(capacity__icontains=value) |
             Q(credential__icontains=value) |
             Q(access__icontains=value) |

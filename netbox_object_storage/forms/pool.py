@@ -1,28 +1,34 @@
-from ..models import Pool, Cluster, PoolTypeChoices
+from ..models import Pool, S3Cluster
 from extras.models import Tag
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm
 from utilities.forms.fields import CommentField, DynamicModelChoiceField, DynamicModelMultipleChoiceField
-from utilities.forms import ConfirmationForm, BootstrapMixin, TagFilterField, MultipleChoiceField
+from utilities.forms import TagFilterField
 from django import forms
+from tenancy.models import Contact
 
 
 class PoolForm(NetBoxModelForm):
+    contact = DynamicModelChoiceField(
+        queryset=Contact.objects.all(),
+        required=False
+    )
+
     comments = CommentField()
+
     tags = DynamicModelMultipleChoiceField(
         queryset=Tag.objects.all(),
         required=False
     )
+
     fieldsets = (
         (
-            'General', 
-            (
-                'name', 
-                'type',
-                'size', 
-                'cluster',
-                'description',
-                'tags'
-            )
+            'General', ('name', 'type', 'size', 'description', 'tags')
+        ),
+        (
+            'Contact', ('contact',)
+        ),
+        (
+            'S3 Cluster', ('cluster',)
         ),
     )
     class Meta:
@@ -31,6 +37,7 @@ class PoolForm(NetBoxModelForm):
             'name', 
             'type', 
             'size',
+            'contact',
             'cluster',
             'description',
             'comments', 
@@ -41,13 +48,18 @@ class PoolFilterForm(NetBoxModelFilterSetForm):
     fieldsets = (
         (None, ('q', 'filter_id', 'tag')),
         ('Pool', (
-            'type', 'size', 'cluster_id'
+            'type', 'size', 'cluster_id', 'contact_id'
         ))
     )
 
-    type = MultipleChoiceField(
-        choices=PoolTypeChoices,
+    type = forms.CharField(
         required=False,
+    )
+
+    contact_id = DynamicModelChoiceField(
+        queryset=Contact.objects.all(),
+        required=False,
+        label='Contact'
     )
 
     size = forms.IntegerField(
@@ -55,9 +67,9 @@ class PoolFilterForm(NetBoxModelFilterSetForm):
     )
 
     cluster_id = DynamicModelChoiceField(
-        queryset=Cluster.objects.all(),
+        queryset=S3Cluster.objects.all(),
         required=False,
-        label='Cluster'
+        label='S3Cluster'
     )
 
     tag = TagFilterField(model)

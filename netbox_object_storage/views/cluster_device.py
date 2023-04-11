@@ -1,7 +1,7 @@
 from netbox.views import generic
 from django.shortcuts import get_object_or_404, redirect, render
-from ..models import Cluster
-from .. import forms, tables
+from ..models import S3Cluster
+from .. import forms
 from django.db import transaction
 from dcim.models import Device
 from dcim.tables import DeviceTable
@@ -12,28 +12,18 @@ from utilities.views import ViewTab, register_model_view
 from django.contrib import messages
 
 
-@register_model_view(Cluster, 'devices')
-class ClusterDevicesView(generic.ObjectChildrenView):
-    queryset = Cluster.objects.all()
+@register_model_view(S3Cluster, 'devices')
+class S3ClusterDevicesView(generic.ObjectChildrenView):
+    queryset = S3Cluster.objects.all()
     child_model = Device
     table = DeviceTable
     filterset = DeviceFilterSet
     template_name = 'cluster_assignment/device.html'
-
     tab = ViewTab(
         label=_('Devices'),
         badge=lambda obj: obj.devices.count() if obj.devices else 0,
         weight=600
     )
-
-    # def get(self, request, pk):
-    #     queryset = self.queryset.filter(pk=pk)
-    #     cluster = get_object_or_404(queryset)
-    #     if cluster.type not in ['device']:
-    #         # self.tab = None
-    #         messages.warning(request, 'This cluster is not type device !')
-    #         return redirect(reverse('plugins:netbox_object_storage:cluster', kwargs={'pk': pk}))
-    #     return super().get(request, pk)
 
      # permission='virtualization.view_virtualmachine',
     def get_children(self, request, parent):
@@ -43,9 +33,9 @@ class ClusterDevicesView(generic.ObjectChildrenView):
         )
 
 
-@register_model_view(Cluster, 'add_devices', path='devices/add')
-class ClusterAddDevicesView(generic.ObjectEditView):
-    queryset = Cluster.objects.all()
+@register_model_view(S3Cluster, 'add_devices', path='devices/add')
+class S3ClusterAddDevicesView(generic.ObjectEditView):
+    queryset = S3Cluster.objects.all()
     form = forms.ClusterAddDevicesForm
     template_name = 'cluster_assignment/cluster_add_devices.html'
 
@@ -57,7 +47,7 @@ class ClusterAddDevicesView(generic.ObjectEditView):
         return render(request, self.template_name, {
             'cluster': cluster,
             'form': form,
-            'return_url': reverse('plugins:netbox_object_storage:cluster', kwargs={'pk': pk}),
+            'return_url': reverse('plugins:netbox_object_storage:s3cluster', kwargs={'pk': pk}),
         })
 
     def post(self, request, pk):
@@ -70,7 +60,7 @@ class ClusterAddDevicesView(generic.ObjectEditView):
             device_pks = form.cleaned_data['devices']
             with transaction.atomic():
 
-                # Assign the selected Devices to the Cluster
+                # Assign the selected Devices to the S3Cluster
                 for device in Device.objects.filter(pk__in=device_pks):
                     if device in cluster.devices.all():
                         continue
@@ -91,9 +81,9 @@ class ClusterAddDevicesView(generic.ObjectEditView):
 
 
 ### Device Remove
-@register_model_view(Cluster, 'remove_devices', path='devices/remove')
-class ClusterRemoveDevicesView(generic.ObjectEditView):
-    queryset = Cluster.objects.all()
+@register_model_view(S3Cluster, 'remove_devices', path='devices/remove')
+class S3ClusterRemoveDevicesView(generic.ObjectEditView):
+    queryset = S3Cluster.objects.all()
     form = forms.ClusterRemoveDevicesForm
     template_name = 'netbox_object_storage/generic/bulk_remove.html'
 
@@ -106,12 +96,12 @@ class ClusterRemoveDevicesView(generic.ObjectEditView):
             # if form.is_valid():
             device_pks = request.POST.getlist('pk')
             with transaction.atomic():
-                    # Remove the selected Devices from the Cluster
+                    # Remove the selected Devices from the S3Cluster
                     for device in Device.objects.filter(pk__in=device_pks):
                         cluster.devices.remove(device)
                         cluster.save()
 
-            messages.success(request, "Removed {} devices from Cluster {}".format(
+            messages.success(request, "Removed {} devices from S3Cluster {}".format(
                 len(device_pks), cluster
             ))
             return redirect(cluster.get_absolute_url())

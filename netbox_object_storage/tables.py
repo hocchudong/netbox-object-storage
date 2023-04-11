@@ -1,22 +1,27 @@
 import django_tables2 as tables
 
 from netbox.tables import NetBoxTable, ChoiceFieldColumn, columns
-from .models import Pool, Bucket, Cluster
+from .models import Pool, Bucket, S3Cluster
 
 
 __all__ = (
     'PoolTable',
     'BucketTable',
-    'ClusterTable',
+    'S3ClusterTable',
 )
 
 class BucketTable(NetBoxTable):
     pk = columns.ToggleColumn()
+
     name = tables.Column(
         linkify=True,
     )
 
     capacity = tables.Column()
+
+    contact = tables.Column(
+        linkify=True,
+    )
 
     credential = tables.Column()
 
@@ -31,10 +36,10 @@ class BucketTable(NetBoxTable):
     )
     assigned_object = tables.Column(
         linkify=True,
-        orderable=False,
+        orderable=False, 
         verbose_name='Storage Backend'
     )
-
+    
     comments = columns.MarkdownColumn()
 
     tags = columns.TagColumn()
@@ -43,9 +48,10 @@ class BucketTable(NetBoxTable):
         model = Bucket
         fields = ("pk", 
                   "id", 
-                  "name", 
-                  "access", 
-                  "capacity", 
+                  "name",
+                  "access",
+                  "contact",
+                  "capacity",
                   "url",
                   "credential",
                   "description", 
@@ -55,10 +61,11 @@ class BucketTable(NetBoxTable):
                   "assigned_object",
                   "created",
                   "last_updated",
-                  "actions"
+                  "actions",
                 )
         default_columns = ("name",
                            "access",
+                           "contact",
                            "capacity",
                            "url",
                            "credential",
@@ -67,19 +74,23 @@ class BucketTable(NetBoxTable):
                            'actions',
                         )
 
-
 class PoolTable(NetBoxTable):
     name = tables.Column(
         linkify=True,
     )
 
-    type = ChoiceFieldColumn()
+    type = tables.Column()
+
+    contact = tables.Column(
+        linkify=True,
+    )
 
     size = tables.Column()
 
     cluster = tables.Column(
         linkify=True,
     )
+
     description = tables.Column()
 
     comments = columns.MarkdownColumn()
@@ -91,7 +102,8 @@ class PoolTable(NetBoxTable):
         fields = ("pk", 
                   "id", 
                   "name", 
-                  "type", 
+                  "type",
+                  "contact",
                   "size",
                   "cluster", 
                   "description", 
@@ -102,30 +114,53 @@ class PoolTable(NetBoxTable):
                   "actions"
                 )
         default_columns = ("name",
-                           "type", 
+                           "type",
+                           "contact", 
                            "size",
                            "cluster"
                         )
 
-class ClusterTable(NetBoxTable):
+class S3ClusterTable(NetBoxTable):
     name = tables.Column(
         linkify=True,
     )
 
-    type = ChoiceFieldColumn()
+    type = tables.Column()
 
+    contact = tables.Column(
+        linkify=True,
+    )
+
+    raw_size = tables.Column()
+
+    used_size = tables.Column()
+
+    dv_count = tables.Column(
+        verbose_name='Devices Count',
+        accessor='dv_count',
+    ) 
+    vm_count = tables.Column(
+        verbose_name='VM Count',
+        accessor='vm_count',
+    ) 
+    
     description = tables.Column()
 
     comments = columns.MarkdownColumn()
 
     tags = columns.TagColumn()
-
+        
     class Meta(NetBoxTable.Meta):
-        model = Cluster
+        model = S3Cluster
         fields = ("pk", 
                   "id", 
                   "name", 
-                  "type", 
+                  "type",
+                  "raw_size",
+                  "used_size",
+                  "dv_count",
+                  "vm_count",
+                  "contact", 
                   "description", 
                   "comments",
                   "tags", 
@@ -135,6 +170,17 @@ class ClusterTable(NetBoxTable):
                 )
         default_columns = ("name",
                            "type",
+                           "raw_size",
+                           "used_size",
+                           "dv_count",
+                           "vm_count",
+                           "contact",
                            "description", 
                            "tags"
                         )
+
+    # def render_dv_count(self, value):
+    #     return value.devices.count()
+    
+    # def render_dv_count(self, value):
+    #     return value.virtualmachine.count()

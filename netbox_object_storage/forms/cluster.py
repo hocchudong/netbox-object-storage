@@ -1,19 +1,34 @@
-from ..models import Cluster, ClusterTypeChoice
+from ..models import S3Cluster
 from extras.models import Tag
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm
-from utilities.forms.fields import CommentField, DynamicModelChoiceField, DynamicModelMultipleChoiceField
+from utilities.forms.fields import CommentField, DynamicModelMultipleChoiceField
 from django import forms
 from dcim.models import Device
 from virtualization.models import VirtualMachine
-from utilities.forms import TagFilterField, MultipleChoiceField
+from utilities.forms.fields import CommentField, DynamicModelChoiceField
+from tenancy.models import Contact
+from utilities.forms import (
+    TagFilterField,
+)
 
-from django.forms.widgets import CheckboxSelectMultiple
-from django.contrib.admin.widgets import FilteredSelectMultiple
-
-
-class ClusterForm(NetBoxModelForm):
+class S3ClusterForm(NetBoxModelForm):
     name = forms.CharField(
         label='Name',
+    )
+
+    contact = DynamicModelChoiceField(
+        queryset=Contact.objects.all(),
+        required=False
+    )
+
+    raw_size = forms.IntegerField(
+        required=False,
+        label='Raw Size',
+    )
+
+    used_size = forms.IntegerField(
+        required=False,
+        label='Used Size',
     )
 
     comments = CommentField()
@@ -23,34 +38,38 @@ class ClusterForm(NetBoxModelForm):
         required=False
     )
 
+
     fieldsets = (
         (
-            'General', 
-            (
-                'name', 
-                'type',
-                'description',
-                'tags'
-            )
+            'General', ('name', 'type','description','tags')
+        ),
+        (
+            'Cluster Size', ('raw_size', 'used_size')
+        ),
+        (
+            'Contact', ('contact',)
         ),
     )
     class Meta:
-        model = Cluster
+        model = S3Cluster
         fields = (
             'name', 
             'type', 
+            'contact',
+            'raw_size',
+            'used_size',
             'description',
             'comments', 
             'tags')
 
 
-class ClusterFilterForm(NetBoxModelFilterSetForm):
-    model = Cluster
+class S3ClusterFilterForm(NetBoxModelFilterSetForm):
+    model = S3Cluster
 
     fieldsets = (
-        (None, ('q', 'filter_id')),
-        ('Cluster', (
-            'type', 'virtualmachine_id', 'devices_id'
+        (None, ('q', 'filter_id', 'tag',)),
+        ('S3Cluster', (
+            'type', 'virtualmachine_id', 'devices_id', 'contact_id'
         ))
     )
 
@@ -60,14 +79,20 @@ class ClusterFilterForm(NetBoxModelFilterSetForm):
         label='VM'
     )
 
+    contact_id = DynamicModelChoiceField(
+        queryset=Contact.objects.all(),
+        required=False,
+        label='Contact'
+    )
+
     devices_id = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
         required=False,
         label='Device'
     )
 
-    type = MultipleChoiceField(
-        choices=ClusterTypeChoice,
-        required=False,
+    type = forms.CharField(
+        required=False
     )
-    # tag = TagFilterField(model)
+
+    tag = TagFilterField(model)

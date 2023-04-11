@@ -9,6 +9,7 @@
     </div>
     {% render_field form.name %}
     {% render_field form.capacity %}
+    {% render_field form.contact %}
     {% render_field form.credential %}
     {% render_field form.url %}
     {% render_field form.access %}
@@ -24,7 +25,7 @@
         <ul class="nav nav-pills" role="tablist">
           <li role="presentation" class="nav-item">
             <button role="tab" type="button" id="cluster_tab" data-bs-toggle="tab" aria-controls="cluster" data-bs-target="#cluster" class="nav-link {% if form.initial.cluster %}active{% endif %}">
-              Cluster
+              S3Cluster
             </button>
           </li>
           <li role="presentation" class="nav-item">
@@ -46,7 +47,12 @@
       </div>
     </div>
   </div>
- {% render_field form.comments %}
+  <div class="field-group my-5">
+    <div class="row mb-2">
+      <h5 class="offset-sm-3">Comments</h5>
+    </div>
+    {% render_field form.comments %}
+  </div>
  {% if form.custom_fields %}
   <div class="field-group my-5">
     <div class="row mb-2">
