@@ -49,20 +49,6 @@ class S3Cluster(NetBoxModel):
         related_name='s3cluster_contact',
     )
 
-    s3device_count = models.IntegerField(
-        null=True, 
-        blank=True, 
-        default=None,
-        verbose_name = 'Device Count'
-    )
-
-    s3vm_count = models.IntegerField(
-        null=True, 
-        blank=True,
-        default=None,
-        verbose_name = 'VM Count'
-    )
-
     raw_size = models.IntegerField(
         null=True, 
         blank=True, 
@@ -99,3 +85,6 @@ class S3Cluster(NetBoxModel):
         # Check if name is existed, raise Validation Error
         if S3Cluster.objects.filter(name=self.name).exclude(pk=self.pk).exists():
             raise ValidationError('A cluster with this name already exists.')
+        if self.raw_size and self.used_size:
+            if self.raw_size <= self.used_size:
+                raise ValidationError('Used size must less than Raw Size')

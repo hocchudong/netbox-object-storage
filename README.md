@@ -8,7 +8,7 @@ To install the plugin, first using pip and install netbox-object-storage:
 
 ```
 /opt/netbox/venv/bin/activate
-pip3 install git+https://github.com/hocchudong/netbox-object-storage.git@main
+pip3 install netbox-object-storage
 ```
 
 Next, enable the plugin in `/opt/netbox/netbox/netbox/configuration.py`, or if you have a `/configuration/plugins.py `file, the plugins.py file will take precedence.
@@ -49,7 +49,7 @@ cd netbox-docker
 
 ```
 gunicorn
-git+https://github.com/hocchudong/netbox-object-storage.git@main
+netbox-object-storage
 ```
 
 **Step-3**: File `Dockerfile-Plugins` will enable to build a new image with the required plugins:

@@ -23,12 +23,12 @@ class S3ClusterForm(NetBoxModelForm):
 
     raw_size = forms.IntegerField(
         required=False,
-        label='Raw Size',
+        label='Raw Size (GB)',
     )
 
     used_size = forms.IntegerField(
         required=False,
-        label='Used Size',
+        label='Used Size (GB)',
     )
 
     comments = CommentField()

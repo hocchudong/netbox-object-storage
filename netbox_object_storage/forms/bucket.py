@@ -41,7 +41,8 @@ class BucketForm(NetBoxModelForm):
     class Meta:
         model = Bucket
         fields = (
-            'name', 'capacity', 'credential', 'url', 
+            'name', 'capacity', 'credential', 'url',
+            'contact', 'issue_date', 'expiration_date',
             'access', 'description', 'comments', 'tags'
             )
     def __init__(self, *args, **kwargs):

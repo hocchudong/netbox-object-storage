@@ -37,6 +37,14 @@
                 <td>{{ object.assigned_object|linkify|placeholder }}</td>
             </tr>
             <tr>
+                <th scope="row">Issue Date</th>
+                <td>{{ object.issue_date|placeholder }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Expire Date</th>
+                <td>{{ object.expiration_date|placeholder }}</td>
+            </tr>
+            <tr>
                 <th scope="row">Description</th>
                 <td>{{ object.description|placeholder }}</td>
             </tr>
