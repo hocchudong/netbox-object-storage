@@ -78,7 +78,19 @@ class Bucket(NetBoxModel):
         ct_field='assigned_object_type',
         fk_field='assigned_object_id'
     )
-
+    
+    issue_date = models.DateField(
+        help_text='The date on which this bucket was issued',
+        blank=True,
+        default=None,
+        null=True,
+    )
+    expiration_date = models.DateField(
+        help_text='The date on which this bucket expires',
+        blank=True,
+        default=None,
+        null=True,
+    )
     description = models.CharField(
         max_length=500,
         blank=True
@@ -98,7 +110,7 @@ class Bucket(NetBoxModel):
 
     def __str__(self):
         if self.pk is not None:
-            return f'{self.assigned_object} <> {self.name}'
+            return f'{self.name}'
         return super().__str__()
 
     def get_absolute_url(self):
@@ -108,3 +120,6 @@ class Bucket(NetBoxModel):
         # Check if name is existed, raise Validation Error
         if Bucket.objects.filter(name=self.name).exclude(pk=self.pk).exists():
             raise ValidationError('A bucket with this name already exists.')
+        if self.expiration_date and self.issue_date:
+            if self.expiration_date <= self.issue_date:
+                raise ValidationError('Expiration date must be after issue date.')

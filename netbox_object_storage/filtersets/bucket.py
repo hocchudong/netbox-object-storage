@@ -29,7 +29,7 @@ class BucketFilterSet(NetBoxModelFilterSet):
             'access',
             'assigned_object_type_id'
         )
-        
+
     def search(self, queryset, name, value):
         query = Q(
             Q(name__icontains=value) |

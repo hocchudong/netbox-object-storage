@@ -35,8 +35,9 @@ class BucketSerializer(NetBoxModelSerializer):
         model = Bucket
         fields = fields = (
             'id', 'url', 'display', 'name', 'capacity', 'credential', 'contact',
-            'url', 'access','assigned_object_type', 'assigned_object_id', 'assigned_object', 
-            'description', 'comments', 'tags', 'custom_fields', 'created', 'last_updated'
+            'issue_date', 'expiration_date', 'url', 'access','assigned_object_type', 
+            'assigned_object_id', 'assigned_object', 'description', 'comments', 'tags', 
+            'custom_fields', 'created', 'last_updated'
         )
 
     @swagger_serializer_method(serializer_or_field=serializers.JSONField)

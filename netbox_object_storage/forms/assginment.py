@@ -66,6 +66,7 @@ class ClusterAddVMsForm(BootstrapMixin, forms.Form):
     virtualmachine = DynamicModelMultipleChoiceField(
         queryset=VirtualMachine.objects.all(),
     )
+    
     class Meta:
         fields = [
             'cluster', 'virtualmachine'

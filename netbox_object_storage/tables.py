@@ -29,6 +29,9 @@ class BucketTable(NetBoxTable):
 
     access = ChoiceFieldColumn()
 
+    issue_date = tables.Column()
+    expiration_date = tables.Column()
+
     description = tables.Column()
 
     assigned_object_type = columns.ContentTypeColumn(
@@ -54,6 +57,8 @@ class BucketTable(NetBoxTable):
                   "capacity",
                   "url",
                   "credential",
+                  "issue_date",
+                  "expiration_date",
                   "description", 
                   "comments",
                   "tags", 
@@ -69,6 +74,8 @@ class BucketTable(NetBoxTable):
                            "capacity",
                            "url",
                            "credential",
+                           "issue_date",
+                           "expiration_date",
                            "assigned_object_type",
                            "assigned_object",
                            'actions',
