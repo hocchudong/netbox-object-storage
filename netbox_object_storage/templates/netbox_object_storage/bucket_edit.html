@@ -1,0 +1,64 @@
+{% extends 'generic/object_edit.html' %}
+{% load helpers %}
+{% load form_helpers %}
+
+{% block form %}
+  <div class="field-group my-5">
+    <div class="row mb-2">
+      <h5 class="offset-sm-3">Bucket</h5>
+    </div>
+    {% render_field form.name %}
+    {% render_field form.capacity %}
+    {% render_field form.contact %}
+    {% render_field form.credential %}
+    {% render_field form.url %}
+    {% render_field form.access %}
+    {% render_field form.description %}
+    {% render_field form.tags %}
+  </div>
+  <div class="field-group my-5">
+    <div class="row mb-2">
+      <h5 class="offset-sm-3">Bucket Storage Backend</h5>
+    </div>
+    <div class="row mb-3">
+      <div class="offset-sm-3">
+        <ul class="nav nav-pills" role="tablist">
+          <li role="presentation" class="nav-item">
+            <button role="tab" type="button" id="cluster_tab" data-bs-toggle="tab" aria-controls="cluster" data-bs-target="#cluster" class="nav-link {% if form.initial.cluster %}active{% endif %}">
+              S3Cluster
+            </button>
+          </li>
+          <li role="presentation" class="nav-item">
+            <button role="tab" type="button" id="pool_tab" data-bs-toggle="tab" aria-controls="pool" data-bs-target="#pool" class="nav-link {% if form.initial.pool %}active{% endif %}">
+              Pool
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="tab-content p-0 border-0">
+        <div class="tab-pane {% if form.initial.cluster %}active{% endif %}" id="cluster" role="tabpanel" aria-labeled-by="cluster_tab">
+          {% render_field form.cluster %}
+        </div>
+        <div class="tab-pane {% if form.initial.pool %}active{% endif %}" id="pool" role="tabpanel" aria-labeled-by="pool_tab">
+          {% render_field form.pool %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="field-group my-5">
+    <div class="row mb-2">
+      <h5 class="offset-sm-3">Comments</h5>
+    </div>
+    {% render_field form.comments %}
+  </div>
+ {% if form.custom_fields %}
+  <div class="field-group my-5">
+    <div class="row mb-2">
+      <h5 class="offset-sm-3">Custom Fields</h5>
+    </div>
+    {% render_custom_fields form %}
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'cluster_assignment/base.html' %}
+{% load render_table from django_tables2 %}
+{% load helpers %}
+{% load plugins %}
+
+{% block content %}
+<div class="row mb-3">
+  <div class="col col-md-6">
+    <div class="card">
+      <h5 class="card-header">S3 Cluster</h5>
+      <div class="card-body">
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">Name</th>
+            <td>{{ object.name|linkify|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Type</th>
+            <td>{{ object.type }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Contact</th>
+            <td>{{ object.contact|linkify|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Raw Size</th>
+            <td>{{ object.raw_size }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Used Size</th>
+            <td>{{ object.used_size }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Device Count</th>
+            <td>{{ object.devices.count }}</td>
+          </tr>
+          <tr>
+            <th scope="row">VM Count</th>
+            <td>{{ object.virtualmachine.count }}</td>
+          </tr>
+          <tr>
+              <th scope="row">Description</th>
+              <td>{{ object.description|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    {% include 'inc/panels/comments.html' %}
+  </div>
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Allocated Resources</h5>
+        <div class="card-body">
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row"><i class="mdi mdi-gauge"></i> Virtual CPUs</th>
+                    <td>{{ instance_resource.vcpus_sum|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row"><i class="mdi mdi-chip"></i> Memory</th>
+                    <td>
+                        {% if instance_resource.memory_sum %}
+                            {{ instance_resource.memory_sum|humanize_megabytes }}
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><i class="mdi mdi-harddisk"></i> Disk Space</th>
+                    <td>
+                        {% if instance_resource.disk_sum %}
+                            {{ instance_resource.disk_sum }} GB
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+      {% include 'inc/panels/custom_fields.html' %}
+      {% include 'inc/panels/tags.html' %}
+  </div>
+</div>
+<div class="row">
+  <div class="col col-md-12">
+    <div class="card">
+      <h5 class="card-header">Purchased Assets</h5>
+      <div class="card-body table-responsive">
+        {% render_table pool_table 'inc/table.html' %}
+        {% include 'inc/paginator.html' with paginator=pool_table.paginator page=pool_table.page %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
